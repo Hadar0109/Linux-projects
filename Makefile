@@ -1,23 +1,20 @@
-IDIR = -I.
-CC = g++
-CFLAGS = -Wall -std=c++17 -fPIC
+CC = gcc
+CFLAGS = -Wall -Wextra -g
+LDFLAGS = -lmta_crypt -lmta_rand -lpthread
 
-PROGRAMS = bitcoin_shell printdb db_to_csv reload_db block_finder
-TARGETS = $(addsuffix .out,$(PROGRAMS))
+SRCS = $(wildcard *.c) #Automatically collects all .c source files in the current directory
+OBJS = $(SRCS:.c=.o)
 
-LIB_SRCS = utils.cpp functions.cpp
-LIB = utils
-LIBPATH = lib$(LIB).so
+TARGET = encrypt.out
 
-$(LIBPATH): $(LIB_SRCS)
-	$(CC) $(CFLAGS) -shared -o $@ $^
+all: $(TARGET)
 
-%.out: %.cpp $(LIBPATH)
-	$(CC) $(CFLAGS) -o $@ $< $(IDIR) -l$(LIB) -L. -Wl,-rpath=.
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS)
 
-all: $(TARGETS)
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: clean
 clean:
-	rm -f *.out lib$(LIB).so
+	rm -f $(OBJS) $(TARGET)
 
