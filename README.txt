@@ -1,4 +1,4 @@
-README – Ex2 Submission
+README – Ex3 Submission
 
 Authors:
 - Hadar Ashkenazi
@@ -6,7 +6,12 @@ Authors:
 - Noa Dinbar
 
 ## Project Name:
-Mta Crypto
+Mta_Crypto_Containers
+
+## Docker Images
+
+- Encrypter Image: [hadarash/mta_crypt_encrypter](https://hub.docker.com/r/hadarash/mta_crypt_encrypter)
+- Decrypter Image: [hadarash/mta_crypt_decrypter](https://hub.docker.com/r/hadarash/mta_crypt_decrypter)
 
 
 ## Project Instructions:
@@ -24,15 +29,32 @@ sudo dpkg -i mta-utils-dev-aarch64.deb
 If the result is x86_64, use the x86_64 package.
 If the result is aarch64 or arm64, use the aarch64 package.)
 
+## Prerequisites
+- Docker installed and running
+- Bash (on Linux or macOS)
+- `mtacrypt.conf` file in the project root
 
 ## Build & Run Instructions:
-1. To compile all required components- run:
-make
+To run the encrypter and a desired number of decrypters, execute the following command and provide the number of decrypters to create:
+./launcher.sh <num_of_decrypters>
+After running this command, the IDs of the created encrypter and decrypter containers will be printed to the screen.
 
-2. To run the program- run:
-./encrypted.out -n <num_of_decrypters> -l <password_length> [-t <timeout_seconds>]
+To manually create a single container of either the encrypter or a decrypter, use the following command (depending on the desired image):
 
-Supported Flags:
--n : Determines how many decrypter threads will be created.
--l : The number of characters to be encrypted. The more characters, the harder it is for the decrypters to crack the password.
--t (optional): Timeout in seconds. If no correct password is received within this time, the server will regenerate a new one.
+sudo docker run -d -v /tmp/mtacrypt:/mnt/mta mta_crypt_encrypter
+(for running first time, instead of running launcher.sh)
+
+or
+
+sudo docker run -d -v /tmp/mtacrypt:/mnt/mta mta_crypt_decrypter
+(and for manually adding another decrypter while running)
+
+This will print the ID of the newly created container.
+
+To enter an existing container's shell, run:
+sudo docker exec -it <container_id_or_name> /bin/bash
+
+Once inside the container, to view its log messages, run:
+tail -f /var/log/mtacrypt.log
+
+
